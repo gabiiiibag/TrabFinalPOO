@@ -1,24 +1,34 @@
 package br.edu.atitus.TrabFinal.TrabPedido.Entities;
 
-public class Usuario {
-	
-	private long id;
-	private String nome;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "usuario")
+public class Usuario extends GenericEntity implements UserDetails{
+
+	private static final long serialVersionUID = 1L;
+
+	@Column(length = 150, nullable = false, unique = true)
 	private String email;
+	
+	@Column(nullable = false)
 	private boolean status;
 	
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getNome() {
-		return nome;
-	}
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+	
+	@Column(nullable = false)
+	private String senha;
+	
+	
+	
 	public String getEmail() {
 		return email;
 	}
@@ -31,5 +41,42 @@ public class Usuario {
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
+	public String getSenha() {
+		return senha;
+	}
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return null;
+	}
+	@Override
+	public String getPassword() {
+		return this.senha;
+	}
+	@Override
+	public String getUsername() {
+		return this.email;
+	}
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+	@Override
+	public boolean isEnabled() {
+		return this.status;
+	}
+	
+	
 
 }
