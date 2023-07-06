@@ -6,17 +6,17 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.atitus.TrabFinal.TrabPedido.Entities.Usuario;
 
 @Repository
 public interface UsuarioRepository extends GenericRepository<Usuario>{
 	
-	@Query(value = "UPDATE usuario set status = not status where id = :id", nativeQuery = true)
+	@Query(value = "update Usuario set status = not status where id = :ident", nativeQuery = true)
 	@Modifying
-	void alteraStatus(@Param("id") long id);
-	
-	boolean existsByEmailAndIdNot(String email, long id);
+	@Transactional
+	void alteraStatusById(@Param("ident") long id);
 	
 	Optional<Usuario> findByEmail(String email);
 

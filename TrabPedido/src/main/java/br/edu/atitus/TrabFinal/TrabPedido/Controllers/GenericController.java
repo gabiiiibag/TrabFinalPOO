@@ -19,6 +19,8 @@ import br.edu.atitus.TrabFinal.TrabPedido.Entities.GenericEntity;
 import br.edu.atitus.TrabFinal.TrabPedido.Services.GenericService;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+import java.util.Optional;
+
 @RestController
 public abstract class GenericController<TEntidade extends GenericEntity> {
 	
@@ -55,7 +57,7 @@ public abstract class GenericController<TEntidade extends GenericEntity> {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Object> getRegistroById(@PathVariable long id){
-		TEntidade objeto;
+		Optional<TEntidade> objeto;
 		try {
 			objeto = this.getService().findById(id);
 		} catch (Exception e) {

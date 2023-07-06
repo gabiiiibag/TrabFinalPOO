@@ -7,61 +7,53 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.util.RequestPayload;
+
 import br.edu.atitus.TrabFinal.TrabPedido.Components.JwtUtils;
-import br.edu.atitus.TrabFinal.TrabPedido.Controllers.payloads.SigninPayload;
+import br.edu.atitus.TrabFinal.TrabPedido.Controllers.payloads.LoginPayload;
 import br.edu.atitus.TrabFinal.TrabPedido.Controllers.payloads.SignupPayload;
 import br.edu.atitus.TrabFinal.TrabPedido.Entities.Usuario;
 import br.edu.atitus.TrabFinal.TrabPedido.Services.UsuarioService;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
-	private final UsuarioService usuarioService;
-	private final PasswordEncoder passwordEncoder;
-	private final AuthenticationManager authManager;
+	
+	private final AuthenticationManager authenticationManager;
 	private final JwtUtils jwtUtils;
-	public AuthController(UsuarioService usuarioService, PasswordEncoder passwordEncoder
-			, AuthenticationManager authManager, JwtUtils jwtUtils) {
+	private final UsuarioService usuarioService;
+	public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UsuarioService usuarioService) {
 		super();
-		this.usuarioService = usuarioService;
-		this.passwordEncoder = passwordEncoder;
-		this.authManager = authManager;
+		this.authenticationManager = authenticationManager;
 		this.jwtUtils = jwtUtils;
+		this.usuarioService = usuarioService;
 	}
-	@PostMapping("/signin")
-	public ResponseEntity<Object> login(@RequestBody SigninPayload signin) {
-		try {
-			Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(signin.getEmail(), signin.getSenha()));
-			String jwt = jwtUtils.generateTokenFromEmail(signin.getEmail());
-			return ResponseEntity.status(HttpStatus.OK).body(jwt);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
-	}
+	
 	@PostMapping("/signup")
-	public ResponseEntity<Object> autoCadastro(@RequestBody SignupPayload signup) {
+	public ResponseEntity<Object> signup(@RequestBody SignupPayload signup) {
+		Usuario usuarioNovo = new Usuario();
+		usuarioNovo.setNome(signup.getNome());
+		usuarioNovo.setEmail(signup.getEmail());
+		String password = gerarSenhaAleatoria(10);
+		usuarioNovo.setSenha(new BCryptPasswordEncoder().encode(password));
+		
 		try {
-			Usuario usuarioNovo = new Usuario();
-			usuarioNovo.setNome(signup.getNome());
-			usuarioNovo.setEmail(signup.getEmail());
-			usuarioNovo.setStatus(true);
-			String senha = gerarSenhaAleatoria(10);
-			usuarioNovo.setSenha(passwordEncoder.encode(senha));
 			usuarioService.save(usuarioNovo);
-			return ResponseEntity.status(HttpStatus.OK).body(senha);
+			return ResponseEntity.status(HttpStatus.OK).body(password);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 		
+		
 	}
+	
 	private String gerarSenhaAleatoria(int tamanho) {
 		String CARACTERES_PERMITIDOS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
         SecureRandom random = new SecureRandom();
@@ -73,4 +65,16 @@ public class AuthController {
         }
         return senha.toString();
     }
+
+
+	@PostMapping("/signin")
+	public ResponseEntity<Object> signin(@RequestBody LoginPayload login) {
+		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha()));
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		
+		String tokenJwt = jwtUtils.generateTokenFromEmail(login.getEmail());
+		return ResponseEntity.ok().body(tokenJwt);
+		
+	}
+
 }
