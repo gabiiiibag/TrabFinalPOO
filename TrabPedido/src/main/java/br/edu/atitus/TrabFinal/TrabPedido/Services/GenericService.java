@@ -32,8 +32,8 @@ public interface GenericService<TEntidade extends GenericEntity> {
 		getRepository().deleteById(id);;
 	}
 
-	default Page<TEntidade> findByNome(Pageable pageable, String nome){
-		return getRepository().findByNomeContainingIgnoreCase(pageable, nome);
+	default Page<TEntidade> findByNome(String nome, Pageable pageable){
+		return getRepository().findByNomeContainingIgnoreCase(nome, pageable);
 	}
 	
 }
