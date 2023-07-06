@@ -7,8 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,12 +19,7 @@ public class Usuario extends GenericEntity implements UserDetails{
 	private String email;
 	
 	@Column(nullable = false)
-	private boolean status;
-	
-	
-	@Column(nullable = false)
 	private String senha;
-	
 	
 	
 	public String getEmail() {
@@ -34,12 +27,6 @@ public class Usuario extends GenericEntity implements UserDetails{
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	public boolean getStatus() {
-		return status;
-	}
-	public void setStatus(boolean status) {
-		this.status = status;
 	}
 	public String getSenha() {
 		return senha;
@@ -74,9 +61,9 @@ public class Usuario extends GenericEntity implements UserDetails{
 	}
 	@Override
 	public boolean isEnabled() {
-		return this.status;
+		return true;
 	}
-	
-	
-
+	public boolean getStatus() {
+		return false;
+	}
 }

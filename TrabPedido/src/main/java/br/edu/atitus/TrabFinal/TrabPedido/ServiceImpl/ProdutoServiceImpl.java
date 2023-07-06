@@ -16,7 +16,6 @@ public class ProdutoServiceImpl implements ProdutoService{
 		this.produtoRepository = produtoRepository;
 	}
 
-
 	@Override
 	public GenericRepository<Produto> getRepository() {
 		return produtoRepository;

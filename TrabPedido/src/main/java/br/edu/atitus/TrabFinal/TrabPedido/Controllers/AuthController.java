@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.util.RequestPayload;
-
 import br.edu.atitus.TrabFinal.TrabPedido.Components.JwtUtils;
-import br.edu.atitus.TrabFinal.TrabPedido.Controllers.payloads.LoginPayload;
+import br.edu.atitus.TrabFinal.TrabPedido.Controllers.payloads.SigninPayload;
 import br.edu.atitus.TrabFinal.TrabPedido.Controllers.payloads.SignupPayload;
 import br.edu.atitus.TrabFinal.TrabPedido.Entities.Usuario;
 import br.edu.atitus.TrabFinal.TrabPedido.Services.UsuarioService;
@@ -68,7 +66,7 @@ public class AuthController {
 
 
 	@PostMapping("/signin")
-	public ResponseEntity<Object> signin(@RequestBody LoginPayload login) {
+	public ResponseEntity<Object> signin(@RequestBody SigninPayload login) {
 		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		

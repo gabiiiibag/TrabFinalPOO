@@ -1,6 +1,5 @@
 package br.edu.atitus.TrabFinal.TrabPedido.ServiceImpl;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,13 +24,6 @@ public class UsuarioServiceImpl implements UsuarioService{
 	}
 
 	@Override
-	public void alteraStatus(long id) throws Exception {
-		if (!usuarioRepository.existsById(id))
-			throw new Exception("Não existe registro com este Id");
-		usuarioRepository.alteraStatusById(id);
-	}
-
-	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Usuario usuario = this.usuarioRepository.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
@@ -43,5 +35,9 @@ public class UsuarioServiceImpl implements UsuarioService{
 		UsuarioService.super.validarSave(objeto);
 		if (objeto.getPassword().isEmpty())
 			throw new Exception("Password não pode ser vazio");
+	}
+
+	@Override
+	public void alteraStatus(long id) throws Exception {	
 	}
 }
